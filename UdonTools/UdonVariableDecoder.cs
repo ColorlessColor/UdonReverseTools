@@ -56,65 +56,68 @@ namespace NotCat.UdonTools
                 var outputPath = Path.Combine("Temp", "UdonTools", "UdonVariableDecoder", $"udon_variable_guid_{guid}.log");
                 Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
-                using (StreamWriter outputFile = File.CreateText(outputPath))
+                if (matches.Length > 0)
                 {
-                    foreach (Match match in matches)
+                    using (StreamWriter outputFile = File.CreateText(outputPath))
                     {
-                        string serializedPublicVariablesBytesString = null;
-                        if (match.Success)
+                        foreach (Match match in matches)
                         {
-                            serializedPublicVariablesBytesString = match.Groups[1].Value ?? "";
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                        if (serializedPublicVariablesBytesString != null)
-                        {
-                            Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] {filePath} Matched.");
-                            IUdonVariableTable publicVariables = DecodeString(serializedPublicVariablesBytesString);
-                            if (publicVariables != null)
+                            string serializedPublicVariablesBytesString = null;
+                            if (match.Success)
                             {
-                                foreach (string publicVariableSymbol in publicVariables.VariableSymbols.ToArray())
+                                serializedPublicVariablesBytesString = match.Groups[1].Value;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            if (serializedPublicVariablesBytesString != null && serializedPublicVariablesBytesString != "")
+                            {
+                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] {filePath} Matched.");
+                                IUdonVariableTable publicVariables = DecodeString(serializedPublicVariablesBytesString);
+                                if (publicVariables != null)
                                 {
-                                    publicVariables.TryGetVariableValue(publicVariableSymbol, out object value);
-                                    outputFile.WriteLine($"Symbol: {publicVariableSymbol}");
+                                    foreach (string publicVariableSymbol in publicVariables.VariableSymbols.ToArray())
+                                    {
+                                        publicVariables.TryGetVariableValue(publicVariableSymbol, out object value);
+                                        outputFile.WriteLine($"Symbol: {publicVariableSymbol}");
 
-                                    publicVariables.TryGetVariableType(publicVariableSymbol, out Type declaredType);
-                                    if (declaredType != null)
-                                    {
-                                        outputFile.WriteLine($"Type: {declaredType}");
-                                    }
-                                    else
-                                    {
-                                        outputFile.WriteLine($"Type: null");
-                                    }
+                                        publicVariables.TryGetVariableType(publicVariableSymbol, out Type declaredType);
+                                        if (declaredType != null)
+                                        {
+                                            outputFile.WriteLine($"Type: {declaredType}");
+                                        }
+                                        else
+                                        {
+                                            outputFile.WriteLine($"Type: null");
+                                        }
 
-                                    if (value != null)
-                                    {
-                                        outputFile.WriteLine($"RealType: {value.GetType()}");
-                                        outputFile.WriteLine($"Value: {value}");
-                                    }
-                                    else
-                                    {
-                                        outputFile.WriteLine($"RealType: null");
-                                        outputFile.WriteLine($"Value: null");
-                                    }
+                                        if (value != null)
+                                        {
+                                            outputFile.WriteLine($"RealType: {value.GetType()}");
+                                            outputFile.WriteLine($"Value: {value}");
+                                        }
+                                        else
+                                        {
+                                            outputFile.WriteLine($"RealType: null");
+                                            outputFile.WriteLine($"Value: null");
+                                        }
 
-                                    outputFile.WriteLine("");
+                                        outputFile.WriteLine("");
+                                    }
                                 }
                             }
+                            else
+                            {
+                                continue;
+                            }
                         }
-                        else
-                        {
-                            continue;
-                        }
-                    }
 
+                    }
+                    UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
+                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] {filePath} decoded, write to {outputPath}");
                 }
-                UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
-                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] {filePath} decoded, write to {outputPath}");
             }
 
             // if (LastoutPutFilePathToOpen != null)
@@ -210,8 +213,8 @@ namespace NotCat.UdonTools
                 return VRC.Udon.Serialization.OdinSerializer.SerializationUtility.DeserializeValue<IUdonVariableTable>(
                     serializedPublicVariablesBytes,
                     DataFormat.Binary,
-                new List<Object>()
-                ) ?? new UdonVariableTable();
+                    new List<Object>()
+                );
             }
             catch (Exception e)
             {

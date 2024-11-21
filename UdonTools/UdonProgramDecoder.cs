@@ -60,14 +60,14 @@ namespace NotCat.UdonTools
                 {
                     if (match.Success)
                     {
-                        program = DecodeBytes(GZip.Decompress(String2Bytes(match.Groups[1].Value ?? "")));
+                        program = DecodeBytes(GZip.Decompress(String2Bytes(match.Groups[1].Value)));
                     }
                     else
                     {
                         match = regex.Match(text);
                         if (match.Success)
                         {
-                            program = DecodeBytes(String2Bytes(match.Groups[1].Value ?? ""));
+                            program = DecodeBytes(String2Bytes(match.Groups[1].Value));
                         }
                     }
                 }
@@ -85,6 +85,10 @@ namespace NotCat.UdonTools
                     GenerateCode2File(program, outputPath);
                     Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] Code generation finished in {timer.Elapsed.ToString(@"ss\.ff")} to {outputPath}");
                     UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
+                }
+                else
+                {
+                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath}, Code generation failed");
                 }
 
             }
