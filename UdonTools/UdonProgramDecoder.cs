@@ -26,13 +26,13 @@ namespace NotCat.UdonTools
         private Vector2 scrolling1;
         private Vector2 scrolling2;
 
-        [MenuItem("Udon Tools/Udon 反编译")]
+        [MenuItem("Udon Tools/Udon 脚本反编译")]
         public static void ShowWindow()
         {
-            GetWindow<UdonSerializedProgramBytesDecoder>("Udon 程序解码");
+            GetWindow<UdonSerializedProgramBytesDecoder>("Udon 脚本反编译");
         }
 
-        [MenuItem("Assets/Udon Tools/Udon 批量反编译")]
+        [MenuItem("Assets/Udon Tools/Udon 脚本批量反编译")]
         public static void Execute() {
             if (Selection.assetGUIDs.Count() == 0) {
                 Debug.LogError("请选择 Udon 程序资产");
@@ -49,6 +49,11 @@ namespace NotCat.UdonTools
             foreach(var guid in guids)
             {
                 var filePath = AssetDatabase.GUIDToAssetPath(guid);
+                if (!File.Exists(filePath))
+                {
+                    continue;
+                }
+
                 Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath}");
                 
                 string text = File.ReadAllText(filePath);

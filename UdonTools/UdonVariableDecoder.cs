@@ -43,20 +43,30 @@ namespace NotCat.UdonTools
         static public void BatchDecodeVariable2File(string[] guids)
         {
             Regex regex = new Regex(@"serializedPublicVariablesBytesString:\s*([^ ]+)");
+            string dirPath = Path.Combine("Temp", "UdonTools", "UdonVariableDecoder");
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(dirPath));
+            }
 
             foreach (var guid in guids)
             {
                 var filePath = AssetDatabase.GUIDToAssetPath(guid);
-                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath}");
+
+                if (!File.Exists(filePath))
+                {
+                    continue;
+                }
+
+                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} decoding...");
 
                 string text = File.ReadAllText(filePath);
 
                 MatchCollection matches = regex.Matches(text);
 
-                var outputPath = Path.Combine("Temp", "UdonTools", "UdonVariableDecoder", $"udon_variable_guid_{guid}.log");
-                Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+                var outputPath = Path.Combine(dirPath, $"udon_variable_guid_{guid}.log");
 
-                if (matches.Length > 0)
+                if (matches.Count > 0)
                 {
                     using (StreamWriter outputFile = File.CreateText(outputPath))
                     {
@@ -74,7 +84,7 @@ namespace NotCat.UdonTools
 
                             if (serializedPublicVariablesBytesString != null && serializedPublicVariablesBytesString != "")
                             {
-                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] {filePath} Matched.");
+                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Matched.");
                                 IUdonVariableTable publicVariables = DecodeString(serializedPublicVariablesBytesString);
                                 if (publicVariables != null)
                                 {
@@ -116,7 +126,7 @@ namespace NotCat.UdonTools
 
                     }
                     UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
-                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] {filePath} decoded, write to {outputPath}");
+                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} decoded, write to {outputPath}");
                 }
             }
 
