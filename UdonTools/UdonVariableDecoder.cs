@@ -37,10 +37,21 @@ namespace NotCat.UdonTools
                 Debug.LogError("请选择 Udon 程序资产");
                 return;
             }
-            BatchDecodeVariable2File(Selection.assetGUIDs);
+            BatchDecodeVariable2File(Selection.assetGUIDs, false);
         }
 
-        static public void BatchDecodeVariable2File(string[] guids)
+        [MenuItem("Assets/Udon Tools/Udon 批量参数解码并打开文件")]
+        public static void BatchDecode2FileAndOpen()
+        {
+            if (Selection.assetGUIDs.Count() == 0)
+            {
+                Debug.LogError("请选择 Udon 程序资产");
+                return;
+            }
+            BatchDecodeVariable2File(Selection.assetGUIDs, true);
+        }
+
+        static public void BatchDecodeVariable2File(string[] guids, bool openExterna)
         {
             Regex regex = new Regex(@"serializedPublicVariablesBytesString:\s*([^ ]+)");
             string dirPath = Path.Combine("Temp", "UdonTools", "UdonVariableDecoder");
@@ -79,6 +90,7 @@ namespace NotCat.UdonTools
                             }
                             else
                             {
+                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skip.");
                                 continue;
                             }
 
@@ -120,20 +132,22 @@ namespace NotCat.UdonTools
                             }
                             else
                             {
+                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skip.");
                                 continue;
                             }
                         }
 
                     }
-                    UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
+                    if (openExterna)
+                    {
+                        UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
+                    }
                     Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Decoded, write to {outputPath}");
                 }
             }
 
-            // if (LastoutPutFilePathToOpen != null)
-            // {
-            //     UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(LastoutPutFilePathToOpen, -1);
-            // }
+            Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] Task finished.");
+
         }
 
         // [MenuItem("CONTEXT/Component/Udoon 参数解码")]

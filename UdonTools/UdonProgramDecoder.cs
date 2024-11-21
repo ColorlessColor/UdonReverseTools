@@ -33,20 +33,33 @@ namespace NotCat.UdonTools
         }
 
         [MenuItem("Assets/Udon Tools/Udon 脚本批量反编译")]
-        public static void Execute() {
-            if (Selection.assetGUIDs.Count() == 0) {
+        public static void DecompileUdon()
+        {
+            if (Selection.assetGUIDs.Count() == 0)
+            {
                 Debug.LogError("请选择 Udon 程序资产");
                 return;
             }
-            BatchDecompileUdon2File(Selection.assetGUIDs);
+            BatchDecompileUdon2File(Selection.assetGUIDs, false);
         }
 
-        static public void BatchDecompileUdon2File(string[] guids)
+        [MenuItem("Assets/Udon Tools/Udon 脚本批量反编译并打开文件")]
+        public static void DecompileUdonAndOpen()
+        {
+            if (Selection.assetGUIDs.Count() == 0)
+            {
+                Debug.LogError("请选择 Udon 程序资产");
+                return;
+            }
+            BatchDecompileUdon2File(Selection.assetGUIDs, true);
+        }
+
+        static public void BatchDecompileUdon2File(string[] guids, bool openExternal)
         {
             Regex regexCompressed = new Regex(@"serializedProgramCompressedBytes:\s*([^ ]+)");
             Regex regex = new Regex(@"serializedProgramBytesString:\s*([^ ]+)");
 
-            foreach(var guid in guids)
+            foreach (var guid in guids)
             {
                 var filePath = AssetDatabase.GUIDToAssetPath(guid);
                 if (!File.Exists(filePath))
@@ -55,7 +68,7 @@ namespace NotCat.UdonTools
                 }
 
                 Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Decompiling...");
-                
+
                 string text = File.ReadAllText(filePath);
 
                 Match match = regexCompressed.Match(text);
@@ -89,7 +102,10 @@ namespace NotCat.UdonTools
                     timer.Start();
                     GenerateCode2File(program, outputPath);
                     Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Code generation finished in {timer.Elapsed.ToString(@"ss\.ff")} to {outputPath}");
-                    UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
+                    if (openExternal)
+                    {
+                        UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
+                    }
                 }
                 else
                 {
@@ -97,6 +113,8 @@ namespace NotCat.UdonTools
                 }
 
             }
+
+            Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] Task finished.");
         }
 
         public void OnGUI()
@@ -109,7 +127,7 @@ namespace NotCat.UdonTools
             undecodedProgramString = GUILayout.TextArea(undecodedProgramString);
             GUILayout.EndScrollView();
             GUILayout.Space(20);
-            
+
             try
             {
                 if (GUILayout.Button("解压并解码"))
@@ -140,8 +158,8 @@ namespace NotCat.UdonTools
 
         static public byte[] String2Bytes(string hex)
         {
-            return Enumerable.Range(0, hex.Length/2)
-                .Select(x => byte.Parse(hex.Substring(2*x, 2), NumberStyles.HexNumber))
+            return Enumerable.Range(0, hex.Length / 2)
+                .Select(x => byte.Parse(hex.Substring(2 * x, 2), NumberStyles.HexNumber))
                 .ToArray();
         }
 
@@ -158,9 +176,10 @@ namespace NotCat.UdonTools
                 );
             }
         }
-        
-        static public string GenerateCode2String(IUdonProgram program) {
-            var decompiler = new UdonFlat.Decompiler {program=program};
+
+        static public string GenerateCode2String(IUdonProgram program)
+        {
+            var decompiler = new UdonFlat.Decompiler { program = program };
             decompiler.Init();
             decompiler.Translate();
             using (var stream = new MemoryStream())
@@ -175,12 +194,13 @@ namespace NotCat.UdonTools
             }
         }
 
-        static void GenerateCode2File(IUdonProgram program, string outputPath) {
+        static void GenerateCode2File(IUdonProgram program, string outputPath)
+        {
             System.IO.Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
-            var decompiler = new UdonFlat.Decompiler {program=program, name=Path.GetFileNameWithoutExtension(outputPath)};
+            var decompiler = new UdonFlat.Decompiler { program = program, name = Path.GetFileNameWithoutExtension(outputPath) };
             decompiler.Init();
             decompiler.Translate();
-            using(var writer = System.IO.File.CreateText(outputPath))
+            using (var writer = System.IO.File.CreateText(outputPath))
                 decompiler.GenerateCode(writer);
         }
 
