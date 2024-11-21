@@ -51,6 +51,11 @@ namespace NotCat.UdonTools
             BatchDecodeVariable2File(Selection.assetGUIDs, true);
         }
 
+        static public string GetHyperLink(string s)
+        {
+            return $"<a href=\"{s}\">{s}</a>";
+        }
+
         static public void BatchDecodeVariable2File(string[] guids, bool openExterna)
         {
             Regex regex = new Regex(@"serializedPublicVariablesBytesString:\s*([^ ]+)");
@@ -90,13 +95,12 @@ namespace NotCat.UdonTools
                             }
                             else
                             {
-                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skip.");
+                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skiped.");
                                 continue;
                             }
 
                             if (serializedPublicVariablesBytesString != null && serializedPublicVariablesBytesString != "")
                             {
-                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Matched.");
                                 IUdonVariableTable publicVariables = DecodeString(serializedPublicVariablesBytesString);
                                 if (publicVariables != null)
                                 {
@@ -132,7 +136,7 @@ namespace NotCat.UdonTools
                             }
                             else
                             {
-                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skip.");
+                                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skiped.");
                                 continue;
                             }
                         }
@@ -142,7 +146,11 @@ namespace NotCat.UdonTools
                     {
                         UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
                     }
-                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Decoded, write to {outputPath}");
+                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Decoded, write to {GetHyperLink(outputPath)}");
+                }
+                else
+                {
+                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Skiped.");
                 }
             }
 

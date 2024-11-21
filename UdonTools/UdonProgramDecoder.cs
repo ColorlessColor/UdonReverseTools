@@ -54,6 +54,11 @@ namespace NotCat.UdonTools
             BatchDecompileUdon2File(Selection.assetGUIDs, true);
         }
 
+        static public string GetHyperLink(string s)
+        {
+            return $"<a href=\"{s}\">{s}</a>";
+        }
+
         static public void BatchDecompileUdon2File(string[] guids, bool openExternal)
         {
             Regex regexCompressed = new Regex(@"serializedProgramCompressedBytes:\s*([^ ]+)");
@@ -67,7 +72,7 @@ namespace NotCat.UdonTools
                     continue;
                 }
 
-                Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Decompiling...");
+                Debug.Log($"[<color=#ffd868>Udon Program Decoder</color>] File: {filePath} Code generation...");
 
                 string text = File.ReadAllText(filePath);
 
@@ -101,7 +106,7 @@ namespace NotCat.UdonTools
                     var timer = new System.Diagnostics.Stopwatch();
                     timer.Start();
                     GenerateCode2File(program, outputPath);
-                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Code generation finished in {timer.Elapsed.ToString(@"ss\.ff")} to {outputPath}");
+                    Debug.Log($"[<color=#ffd868>Udon Program Decoder</color>] File: {filePath} Code generation finished in {timer.Elapsed:ss\\.ff} to {GetHyperLink(outputPath)}");
                     if (openExternal)
                     {
                         UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
@@ -109,12 +114,12 @@ namespace NotCat.UdonTools
                 }
                 else
                 {
-                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Code generation failed");
+                    Debug.Log($"[<color=#ffd868>Udon Program Decoder</color>] File: {filePath} Code generation failed");
                 }
 
             }
 
-            Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] Task finished.");
+            Debug.Log($"[<color=#ffd868>Udon Program Decoder</color>] Task finished.");
         }
 
         public void OnGUI()
