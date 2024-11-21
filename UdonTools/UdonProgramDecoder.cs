@@ -54,7 +54,7 @@ namespace NotCat.UdonTools
                     continue;
                 }
 
-                Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath}");
+                Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Decompiling...");
                 
                 string text = File.ReadAllText(filePath);
 
