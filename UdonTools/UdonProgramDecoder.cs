@@ -88,12 +88,12 @@ namespace NotCat.UdonTools
                     var timer = new System.Diagnostics.Stopwatch();
                     timer.Start();
                     GenerateCode2File(program, outputPath);
-                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] Code generation finished in {timer.Elapsed.ToString(@"ss\.ff")} to {outputPath}");
+                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Code generation finished in {timer.Elapsed.ToString(@"ss\.ff")} to {outputPath}");
                     UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
                 }
                 else
                 {
-                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath}, Code generation failed");
+                    Debug.Log($"[<color=#0c824c>Udon Program Decoder</color>] File: {filePath} Code generation failed");
                 }
 
             }

@@ -58,7 +58,7 @@ namespace NotCat.UdonTools
                     continue;
                 }
 
-                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} decoding...");
+                Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Decoding...");
 
                 string text = File.ReadAllText(filePath);
 
@@ -126,7 +126,7 @@ namespace NotCat.UdonTools
 
                     }
                     UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(outputPath, -1);
-                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} decoded, write to {outputPath}");
+                    Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] File: {filePath} Decoded, write to {outputPath}");
                 }
             }
 
