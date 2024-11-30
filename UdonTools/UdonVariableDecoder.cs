@@ -62,7 +62,7 @@ namespace NotCat.UdonTools
             string dirPath = Path.Combine("Temp", "UdonTools", "UdonVariableDecoder");
             if (!Directory.Exists(dirPath))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(dirPath));
+                Directory.CreateDirectory(dirPath);
             }
 
             foreach (var guid in guids)
