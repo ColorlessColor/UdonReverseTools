@@ -11,6 +11,7 @@ using Object = UnityEngine.Object;
 using UnityEditor;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Text;
 
 namespace NotCat.UdonTools
 {
@@ -122,7 +123,7 @@ namespace NotCat.UdonTools
                                         if (value != null)
                                         {
                                             outputFile.WriteLine($"RealType: {value.GetType()}");
-                                            outputFile.WriteLine($"Value: {value}");
+                                            outputFile.WriteLine($"Value: {GetValueContext(value)}");
                                         }
                                         else
                                         {
@@ -155,6 +156,40 @@ namespace NotCat.UdonTools
             }
 
             Debug.Log($"[<color=#0c824c>Udon Variable Decoder</color>] Task finished.");
+
+        }
+
+        static private string GetValueContext(object value)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (value is string[])
+            {
+                sb.Append("[");
+                foreach (var s in (string[])value)
+                {
+                    sb.Append($"{s}, ");
+                }
+                sb.Append("]");
+                return sb.ToString();
+            }
+            else if (value is IEnumerable<object>)
+            {
+                IEnumerable<object> objs = (IEnumerable<object>)value;
+                sb.Append("[");
+                foreach (var o in objs)
+                {
+                    if (o != null)
+                    {
+                        sb.Append($"{o}, ");
+                    }
+                }
+                sb.Append("]");
+                return sb.ToString();
+            }
+            else
+            {
+                return value.ToString();
+            }
 
         }
 
