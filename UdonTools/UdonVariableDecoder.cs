@@ -191,7 +191,10 @@ namespace NotCat.UdonTools
                 sb.Append("[\n");
                 foreach (var s in (string[])value)
                 {
-                    sb.Append($"{s}\n");
+                    if (s != null)
+                        sb.Append($"{s}\n");
+                    else
+                        sb.Append("null\n");
                 }
                 sb.Append("]");
                 return sb.ToString();
@@ -203,9 +206,9 @@ namespace NotCat.UdonTools
                 foreach (var o in flatObjects(objs))
                 {
                     if (o != null)
-                    {
                         sb.Append($"{o}\n");
-                    }
+                    else
+                        sb.Append("null\n");
                 }
                 sb.Append("]");
                 return sb.ToString();
