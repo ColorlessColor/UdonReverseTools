@@ -159,15 +159,39 @@ namespace NotCat.UdonTools
 
         }
 
+        static private IEnumerable<object> flatObjects(IEnumerable<object> objs)
+        {
+            if (objs == null)
+                return Enumerable.Empty<object>();
+            else if (objs.Count() <= 0)
+                return Enumerable.Empty<object>();
+            else
+            {
+                var lst = new List<object>();
+                foreach (object o in objs)
+                {
+                    if (o is IEnumerable<object>)
+                    {
+                        lst.AddRange(flatObjects((IEnumerable<object>) o));
+                    }
+                    else
+                    {
+                        lst.Add(o);
+                    }
+                }
+                return lst;
+            }
+        }
+
         static private string GetValueContext(object value)
         {
             StringBuilder sb = new StringBuilder();
             if (value is string[])
             {
-                sb.Append("[");
+                sb.Append("[\n");
                 foreach (var s in (string[])value)
                 {
-                    sb.Append($"{s}, ");
+                    sb.Append($"{s}\n");
                 }
                 sb.Append("]");
                 return sb.ToString();
@@ -175,12 +199,12 @@ namespace NotCat.UdonTools
             else if (value is IEnumerable<object>)
             {
                 IEnumerable<object> objs = (IEnumerable<object>)value;
-                sb.Append("[");
-                foreach (var o in objs)
+                sb.Append("[\n");
+                foreach (var o in flatObjects(objs))
                 {
                     if (o != null)
                     {
-                        sb.Append($"{o}, ");
+                        sb.Append($"{o}\n");
                     }
                 }
                 sb.Append("]");
